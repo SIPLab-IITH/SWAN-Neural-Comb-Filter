@@ -7,9 +7,8 @@ import scipy
 import pysepm
 from scipy.io import wavfile
 from scipy import signal
-from attLayers import MultiHeadAttn, MultiHeadAttn_Causal
+from attLayers import MultiHeadAttn, MultiHeadAttnCausal
 from spLosses import ceploss
-from sssnr import SNRseg
 
 parser = argparse.ArgumentParser(
         'enhance',
@@ -27,7 +26,7 @@ def evaluate(args):
     fftLen=512
     
     if args.type=='causal':
-        model=tf.keras.models.load_model(args.model,custom_objects={'ceploss':ceploss, 'MultiHeadAttn':MultiHeadAttn_Causal})    
+        model=tf.keras.models.load_model(args.model,custom_objects={'ceploss':ceploss, 'MultiHeadAttnCausal':MultiHeadAttnCausal})    
     else:
         model=tf.keras.models.load_model(args.model,custom_objects={'ceploss':ceploss, 'MultiHeadAttn':MultiHeadAttn})
 
@@ -44,7 +43,7 @@ def evaluate(args):
     
     window_fn = tf.signal.inverse_stft_window_fn(hopLen)
     
-    pesq=[];stoi=[];csig=[];cbak=[];covl=[];ssnr=[];vssnr=[];uvssnr=[]
+    pesq=[];stoi=[];csig=[];cbak=[];covl=[];ssnr=[]
     
     for clean_file, noise_file in zip(clean_names[:N], noise_names[:N]): 
         print('Processing', noise_file)
@@ -64,23 +63,21 @@ def evaluate(args):
         L=np.min([clean_wav.shape[0], enh_wav.shape[0]])
         clean_wav=clean_wav[:L]
         enh_wav=enh_wav[:L]
-        pq,si,cs,cb,co,ss, vss, uvss = evaluate_metrics(clean_wav, enh_wav,fs)
-        pesq.append(pq);stoi.append(si);csig.append(cs);cbak.append(cb);covl.append(co);ssnr.append(ss);
-        vssnr.append(vss);uvssnr.append(uvss)
+        pq,si,cs,cb,co,ss = evaluate_metrics(clean_wav, enh_wav,fs)
+        pesq.append(pq);stoi.append(si);csig.append(cs);cbak.append(cb);covl.append(co);ssnr.append(ss)
         wavfile.write(args.out_dir+noise_file.split('/')[-1], fs, enh_wav/max(enh_wav))
 
-    return np.mean(pesq),np.mean(stoi),np.mean(csig),np.mean(cbak),np.mean(covl),np.mean(ssnr), np.mean(vssnr), np.mean(uvssnr)
+    return np.mean(pesq),np.mean(stoi),np.mean(csig),np.mean(cbak),np.mean(covl),np.mean(ssnr)
 
 def evaluate_metrics(speech_audio, noise_audio, fs):
     _,pesq = pysepm.pesq(speech_audio, noise_audio,fs)
     stoi = pysepm.stoi(speech_audio, noise_audio, fs)
     csig, cbak, covl = pysepm.composite(speech_audio, noise_audio, fs)
     ssnr = pysepm.SNRseg(speech_audio, noise_audio, fs)
-    vssnr, uvssnr = SNRseg(speech_audio, noise_audio, fs)
-    return pesq, stoi, csig, cbak, covl, ssnr, vssnr, uvssnr
+    return pesq, stoi, csig, cbak, covl, ssnr
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    pesq, stoi, csig, cbak, covl, ssnr, vssnr, uvssnr = evaluate(args)
-    print('\nPESQ:{:.4f}\nSTOI:{:.4f}\nCSIG:{:.4f}\nCBAK:{:.4f}\nCOVL:{:.4f}\nSSNR:{:.4f}\nVoiced SSNR:{:.4f}\nUnVoiced SSNR:{:.4f}\n'
-              .format(pesq, stoi, csig, cbak, covl, ssnr, vssnr, uvssnr))
+    pesq, stoi, csig, cbak, covl, ssnr = evaluate(args)
+    print('\nPESQ:{:.4f}\nSTOI:{:.4f}\nCSIG:{:.4f}\nCBAK:{:.4f}\nCOVL:{:.4f}\nSSNR:{:.4f}\n'
+              .format(pesq, stoi, csig, cbak, covl, ssnr))

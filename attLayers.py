@@ -18,7 +18,7 @@ def causal_mask(shape, context=10):
         tf.ones(shape=shape, dtype=tf.int32), axis=-2)
     col_index = tf.math.cumsum(
         tf.ones(shape=shape, dtype=tf.int32), axis=-1)
-    return (row_index - col_index) <= context
+    return tf.math.logical_and((row_index - col_index) <= context, (row_index - col_index)>=0)
 
 class MultiHeadAttn(tf.keras.layers.Layer):
     def __init__(self, model_size, n_heads, layer_size, context=None):
@@ -58,9 +58,9 @@ class MultiHeadAttn(tf.keras.layers.Layer):
     def get_config(self):
         return {"model_size": self.model_size, "n_heads": self.n_heads, "layer_size": self.layer_size, "context": self.context}
         
-class MultiHeadAttn_Causal(tf.keras.layers.Layer):
+class MultiHeadAttnCausal(tf.keras.layers.Layer):
     def __init__(self, model_size, n_heads, layer_size, context=None):
-        super(MultiHeadAttn_Causal, self).__init__()
+        super(MultiHeadAttnCausal, self).__init__()
         self.model_size = model_size
         self.layer_size = layer_size
         self.n_heads = n_heads

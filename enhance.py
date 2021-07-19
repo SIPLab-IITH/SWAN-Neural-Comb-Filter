@@ -6,7 +6,7 @@ import tensorflow as tf
 import scipy
 from scipy.io import wavfile
 from scipy import signal
-from attLayers import MultiHeadAttn, MultiHeadAttn_Causal
+from attLayers import MultiHeadAttn, MultiHeadAttnCausal
 from spLosses import ceploss
 
 parser = argparse.ArgumentParser(
@@ -24,7 +24,7 @@ def enhance(args):
     fftLen=512
 
     if args.type=='causal':
-        model=tf.keras.models.load_model(args.model,custom_objects={'ceploss':ceploss, 'MultiHeadAttn':MultiHeadAttn_Causal})    
+        model=tf.keras.models.load_model(args.model,custom_objects={'ceploss':ceploss, 'MultiHeadAttnCausal':MultiHeadAttnCausal})    
     else:
         model=tf.keras.models.load_model(args.model,custom_objects={'ceploss':ceploss, 'MultiHeadAttn':MultiHeadAttn})
 
