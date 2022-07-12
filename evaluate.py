@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--model", type=str, help="Trained Model File")
 parser.add_argument("--noisy_dir", type=str, help="Noisy input files")
 parser.add_argument("--ref_dir", type=str, help="Reference files")
-parser.add_argument("--out_dir", default='./', type=str, help="directory putting enhanced wav files")
+parser.add_argument("--out_dir", default='./', type=str, help="directory to place enhanced wav files")
 parser.add_argument("--type", default='non-causal', type=str, help="Type of the model, either Causal or Non-Causal")
 
 def evaluate(args):

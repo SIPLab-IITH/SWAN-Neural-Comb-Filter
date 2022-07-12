@@ -12,9 +12,9 @@ from utils import ceploss, LossLayer, dummy_loss, stft_mag, log
 parser = argparse.ArgumentParser(
         'enhance',
         description="Neural Comb Filtering using SWAN - generate enhancements")
-parser.add_argument("--out_dir", default='./', type=str, help="directory putting enhanced wav files")
 parser.add_argument("--model", type=str, help="Trained Model File")
 parser.add_argument("--noisy_file", type=str, help="Noisy input file")
+parser.add_argument("--out_dir", default='./', type=str, help="directory putting enhanced wav files")
 parser.add_argument("--type", default='non-causal', type=str, help="Type of the model, either Causal or Non-Causal")
 
 def enhance(args):
