@@ -3,12 +3,12 @@
 ### Requirements
 The following libraries/packages are required
 
-**Package Name    Recommended Version**
-  python					    3.9.7
-  numpy               1.19.5
-  scipy               1.7.1
-  tensorflow          2.4.1
-  pysepm              0.1
+**Package Name    Recommended Version** <br />
+  python					    3.9.7 <br />
+  numpy               1.19.5 <br />
+  scipy               1.7.1 <br />
+  tensorflow          2.4.1 <br />
+  pysepm              0.1 <br />
 
 ## Denoising a noisy file
 Use the following command to enhance a noisy wav file
